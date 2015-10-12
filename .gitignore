@@ -1,0 +1,31 @@
+# Intellij IDEA
+.idea
+.idea_modules
+**.iml
+atlassian-ide-plugin.xml
+
+# git
+*.orig
+
+# Play
+logs/*
+modules/commons/dist/*
+modules/lemma-orders/dist/*
+dist/*
+
+# sbt
+.history
+target
+modules/*/target
+project/project
+project/target
+
+# Eclipse
+.settings/*
+.metadata/*
+
+# Lemma
+application-env.conf
+erg-generated-passwords.txt
+dev-evolution.sql
+dev-evolution-all.sql
