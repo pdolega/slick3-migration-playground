@@ -1,6 +1,7 @@
 package org.virtuslab.slick3demo
 
 import slick.dbio.DBIOAction
+import slick.jdbc.SingleSessionDb
 
 //Following import causes an error:
 /*
@@ -12,7 +13,6 @@ import slick.dbio.DBIOAction
 //import slick.driver.PostgresDriver.api._
 
 //This works
-import slick.driver.PostgresDriver.api.{Session => _, _}
 import slick.driver.PostgresDriver.backend.Session
 
 import scala.concurrent.Await
@@ -22,11 +22,17 @@ object Invoker {
 
   protected val queryTimeout = Duration.Inf
 
-  def invokeAction[R, S <: slick.dbio.NoStream, E <: slick.dbio.Effect](action: DBIOAction[R, S, E])
+  def invokeAction_runWithSession[R, S <: slick.dbio.NoStream, E <: slick.dbio.Effect](action: DBIOAction[R, S, E])
                                                                        (implicit session: Session): R = {
     val db = session.database
     Await.result(db.runWithSession(action, session), queryTimeout)
-//    Await.result(db.run(action), queryTimeout) // does not support transaction across separate dbio actions
+  }
+
+  def invokeAction_singleSessionDb[R, S <: slick.dbio.NoStream, E <: slick.dbio.Effect](action: DBIOAction[R, S, E])
+                                                                       (implicit session: Session): R = {
+    val db = session.database
+    val singleSessionDb = SingleSessionDb.createFor(session, db.executor)
+    Await.result(singleSessionDb.run(action), queryTimeout)
   }
 
 }

@@ -32,6 +32,12 @@ object Main extends App {
 class Slick3Demo {
   val db = Database.forConfig("mydb")
 
+  def invokeAction[R, S <: slick.dbio.NoStream, E <: slick.dbio.Effect](action: DBIOAction[R, S, E])
+                                                                                       (implicit session: Session): R = {
+//    Invoker.invokeAction_runWithSession(action)
+    Invoker.invokeAction_singleSessionDb(action)
+  }
+
   def slick2style() = {
     db.withTransaction { implicit session =>
       println("autocommit: " + session.conn.getAutoCommit)
@@ -81,11 +87,11 @@ class Slick3Demo {
   // Slick 2 style calls. Wrap DBIOActions
 
   def selectAllUsers()(implicit session: Session): Seq[User] = {
-    Invoker.invokeAction(selectAllUsersAction())
+    invokeAction(selectAllUsersAction())
   }
 
   def insertUser(user: User)(implicit session: Session): Unit = {
-    Invoker.invokeAction(insertUserAction(user))
+    invokeAction(insertUserAction(user))
   }
 
   // Other
